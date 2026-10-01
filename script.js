@@ -1,5 +1,43 @@
 document.getElementById("year").textContent = new Date().getFullYear();
 
+const themeToggle = document.querySelector(".theme-toggle");
+const systemTheme = window.matchMedia("(prefers-color-scheme: light)");
+
+const updateThemeToggle = (theme) => {
+  const isLight = theme === "light";
+  themeToggle?.setAttribute("aria-checked", String(isLight));
+  themeToggle?.setAttribute("aria-label", `Switch to ${isLight ? "dark" : "light"} mode`);
+};
+
+const setTheme = (theme, persist = true) => {
+  document.documentElement.dataset.theme = theme;
+  updateThemeToggle(theme);
+
+  if (persist) {
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      // The selected theme still works when storage is unavailable.
+    }
+  }
+};
+
+updateThemeToggle(document.documentElement.dataset.theme || "dark");
+
+themeToggle?.addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+  setTheme(nextTheme);
+});
+
+systemTheme.addEventListener?.("change", (event) => {
+  try {
+    if (localStorage.getItem("theme")) return;
+  } catch {
+    return;
+  }
+  setTheme(event.matches ? "light" : "dark", false);
+});
+
 const header = document.querySelector(".header");
 const navLinks = document.querySelectorAll(".nav-links a");
 const sections = document.querySelectorAll("main section[id]");

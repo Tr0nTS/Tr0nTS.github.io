@@ -1,5 +1,42 @@
 document.getElementById("year").textContent = new Date().getFullYear();
 
+const backgroundMusic = document.getElementById("background-music");
+const musicPrompt = document.querySelector(".music-prompt");
+
+if (backgroundMusic) {
+  backgroundMusic.volume = 0.35;
+  backgroundMusic.pause();
+  backgroundMusic.load();
+  backgroundMusic.currentTime = 0;
+
+  const playBackgroundMusic = () => {
+    backgroundMusic.play().then(() => {
+      musicPrompt?.classList.remove("is-visible");
+      document.removeEventListener("pointerdown", playBackgroundMusic);
+      document.removeEventListener("keydown", playBackgroundMusic);
+    }).catch(() => {
+      musicPrompt?.classList.add("is-visible");
+    });
+  };
+
+  playBackgroundMusic();
+  document.addEventListener("pointerdown", playBackgroundMusic);
+  document.addEventListener("keydown", playBackgroundMusic);
+  musicPrompt?.addEventListener("click", playBackgroundMusic);
+
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) return;
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+    playBackgroundMusic();
+  });
+
+  window.addEventListener("beforeunload", () => {
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+  });
+}
+
 const themeToggle = document.querySelector(".theme-toggle");
 const systemTheme = window.matchMedia("(prefers-color-scheme: light)");
 
@@ -37,6 +74,17 @@ systemTheme.addEventListener?.("change", (event) => {
   }
   setTheme(event.matches ? "light" : "dark", false);
 });
+
+const avatarSlides = [...document.querySelectorAll(".avatar-slide")];
+let activeAvatarSlide = 0;
+
+if (avatarSlides.length > 1) {
+  window.setInterval(() => {
+    avatarSlides[activeAvatarSlide].classList.remove("is-active");
+    activeAvatarSlide = (activeAvatarSlide + 1) % avatarSlides.length;
+    avatarSlides[activeAvatarSlide].classList.add("is-active");
+  }, 7000);
+}
 
 const header = document.querySelector(".header");
 const navLinks = document.querySelectorAll(".nav-links a");

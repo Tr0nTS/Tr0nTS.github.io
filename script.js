@@ -144,7 +144,7 @@ if (prefersReducedMotion || !("IntersectionObserver" in window)) {
 }
 
 const interactiveCards = document.querySelectorAll(
-  ".skill-card, .project-card, .info-card, .contact-card"
+  ".skill-card, .project-card, .info-card"
 );
 
 if (!prefersReducedMotion && window.matchMedia("(pointer: fine)").matches) {
@@ -156,16 +156,107 @@ if (!prefersReducedMotion && window.matchMedia("(pointer: fine)").matches) {
     });
   });
 
-  const heroCard = document.querySelector(".hero-card");
+  const avatar = document.querySelector(".avatar");
 
-  heroCard?.addEventListener("pointermove", (event) => {
-    const rect = heroCard.getBoundingClientRect();
+  avatar?.addEventListener("pointermove", (event) => {
+    const rect = avatar.getBoundingClientRect();
     const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -3;
     const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 3;
-    heroCard.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    avatar.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
   });
 
-  heroCard?.addEventListener("pointerleave", () => {
-    heroCard.style.transform = "";
+  avatar?.addEventListener("pointerleave", () => {
+    avatar.style.transform = "";
+  });
+}
+
+const contactMascot = document.querySelector(".contact-mascot");
+const mascotSquash = contactMascot?.querySelector(".contact-mascot-squash");
+const mascotDirections = contactMascot?.querySelector(".contact-mascot-directions");
+const mascotReactions = contactMascot?.querySelector(".contact-mascot-reactions");
+
+if (contactMascot && mascotDirections && mascotReactions) {
+  const directions = ["right", "down-right", "down", "down-left", "left", "up-left", "up", "up-right"];
+  const directionCells = {
+    "up-left": 0, up: 1, "up-right": 2,
+    left: 3, center: 4, right: 5,
+    "down-left": 6, down: 7, "down-right": 8
+  };
+  const reactionCells = { blink: 0, heart: 1, sparkle: 2, dizzy: 7, delighted: 8 };
+  const payoffs = ["heart", "sparkle", "delighted"];
+  const sectorSize = (Math.PI * 2) / directions.length;
+  const deadZone = 70;
+  const hysteresis = .12;
+  let activeSector = -1;
+  let pointer = null;
+  let boopCount = 0;
+  let lastBoop = 0;
+  let timers = [];
+
+  const setCell = (layer, index) => {
+    layer.style.backgroundPosition = `${(index % 3) * 50}% ${Math.floor(index / 3) * 50}%`;
+  };
+
+  const wrapAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
+
+  const aimMascot = () => {
+    if (!pointer) return;
+    const box = contactMascot.getBoundingClientRect();
+    const dx = pointer.x - (box.left + box.width / 2);
+    const dy = pointer.y - (box.top + box.height / 2);
+
+    if (Math.hypot(dx, dy) < deadZone) {
+      activeSector = -1;
+      setCell(mascotDirections, directionCells.center);
+      return;
+    }
+
+    const angle = Math.atan2(dy, dx);
+    if (activeSector !== -1 && Math.abs(wrapAngle(angle - activeSector * sectorSize)) < sectorSize / 2 + hysteresis) return;
+
+    activeSector = (Math.round(angle / sectorSize) + directions.length) % directions.length;
+    setCell(mascotDirections, directionCells[directions[activeSector]]);
+  };
+
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    window.addEventListener("pointermove", (event) => {
+      pointer = { x: event.clientX, y: event.clientY };
+      aimMascot();
+    }, { passive: true });
+    window.addEventListener("scroll", aimMascot, { passive: true });
+  }
+
+  const showReaction = (name) => {
+    setCell(mascotReactions, reactionCells[name]);
+    contactMascot.classList.add("is-reacting");
+  };
+
+  contactMascot.addEventListener("click", () => {
+    timers.forEach(window.clearTimeout);
+    timers = [];
+
+    const now = Date.now();
+    boopCount = now - lastBoop < 1600 ? boopCount + 1 : 1;
+    lastBoop = now;
+
+    if (boopCount >= 4) {
+      boopCount = 0;
+      showReaction("dizzy");
+      timers.push(window.setTimeout(() => contactMascot.classList.remove("is-reacting"), 1100));
+    } else {
+      showReaction("blink");
+      timers.push(window.setTimeout(() => showReaction(payoffs[(boopCount - 1) % payoffs.length]), 120));
+      timers.push(window.setTimeout(() => contactMascot.classList.remove("is-reacting"), 560));
+    }
+
+    if (!prefersReducedMotion) {
+      mascotSquash?.animate([
+        { transform: "scale(1, 1)", easing: "ease-in" },
+        { transform: "scale(1.10, .86)", offset: .18, easing: "ease-out" },
+        { transform: "scale(.95, 1.08)", offset: .45, easing: "ease-in-out" },
+        { transform: "scale(1.03, .97)", offset: .72, easing: "ease-in-out" },
+        { transform: "scale(1, 1)" }
+      ], { duration: 420, easing: "linear" });
+    }
   });
 }

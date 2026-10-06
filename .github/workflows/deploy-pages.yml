@@ -33,6 +33,17 @@ jobs:
       - name: Build website
         run: npm run build
 
+      - name: Use GitHub Actions as the Pages source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --fail-with-body --request PUT \
+            --url "https://api.github.com/repos/${{ github.repository }}/pages" \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --data '{"build_type":"workflow"}'
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

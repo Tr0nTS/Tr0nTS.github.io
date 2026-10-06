@@ -1,0 +1,1 @@
+export default function Footer() { return <footer className="footer"><div className="container"><span>© {new Date().getFullYear()} Tran Minh Thanh</span><span>Frontend Developer</span></div></footer>; }

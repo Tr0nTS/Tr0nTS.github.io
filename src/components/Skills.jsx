@@ -2,7 +2,7 @@ import SectionHeading from './SectionHeading';
 const skills = [
   { title: 'Frontend', tags: ['HTML5','CSS3','Flexbox / Grid','JavaScript ES6+','React','GatsbyJS'] },
   { title: 'Backend', tags: ['NodeJS','Strapi','GraphQL'] },
-  { title: 'Languages & Database', tags: ['C#','Python','Bash','SQL Server','MySQL','SQLite'] },
+  { title: 'Languages & Database', tags: ['C#','C++','Python','Bash','SQL Server','MySQL','SQLite'] },
   { title: 'Security & Systems', tags: ['OWASP Top 10','Burp Suite','Networking','Windows','Linux / Ubuntu'] },
   { title: 'Tools & Productivity', tags: ['Git','AI-assisted development','Debugging','Documentation','Automation scripts'] },
   { title: 'Soft Skills',  tags: ['Problem-solving','Logical thinking','Self-learning','Adaptability','Responsibility'] }

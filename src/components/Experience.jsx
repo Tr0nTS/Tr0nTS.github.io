@@ -1,5 +1,6 @@
 import SectionHeading from './SectionHeading';
 const jobs = [
+  { date:'10/2026 — Present', role:'Automation Software Engineer', company:'Top Engineering Co., Ltd', points:['Develop control software for automated machinery used in the panel packaging process for TFT displays in select Dell and HP laptop models.'] },
   { date:'12/2024 — 09/2026', role:'Developer', company:'Mont-E Joint Stock Company', points:['Designed and developed website user interfaces.','Optimized performance and implemented responsive design.','Improved SEO and integrated APIs.'] },
   { date:'09/2024 — 12/2024', role:'Intern Developer', company:'Bizentro Vietnam Company Limited', points:["Developed menus for Enterprise Management software on the UNIERP platform for Windows using C# and the company's proprietary framework.",'Converted menus into web applications using the DAAF tool with HTML and jQuery (Low-code / No-code).'] }
 ];
